@@ -1,9 +1,13 @@
-import { Elysia } from "elysia";
+import { Cookie, Elysia } from "elysia";
 import { AuthModel } from "./model";
 import { AuthService } from "./service";
-import {jwt} from "@elysiajs/jwt";
+import { jwt } from "@elysiajs/jwt";
 
 export const app = new Elysia({ prefix: "auth" })
+    .use(jwt({
+        name: 'jwt',
+        secret: process.env.JWT_SECRET!
+    }))
     .post(
         '/sign-up', async ({ body, status }) => {
             try {
@@ -28,17 +32,20 @@ export const app = new Elysia({ prefix: "auth" })
     }
     )
 
-    .post("/sign-in", async ({ body, status, cookie: {auth}}) => {
-        const {correctCredentials, userId} = await AuthService.signin(body.email, body.password);
-        if(correctCredentials && userId){
+    .post("/sign-in", async ({jwt, body, status, cookie: { auth } }) => {
+        const { correctCredentials, userId } = await AuthService.signin(body.email, body.password);
+        if (correctCredentials && userId) {
+            const token = await jwt.sign({userId})
+
+            if(!auth){
+                auth = new Cookie("auth", {});
+            }
 
             // sign a jwt token and pass it as a cookie
             auth.set({
-                value: userId,
+                value: token,
                 maxAge: 1 * 36000,
                 httpOnly: true,
-                secure: true,
-                sameSite: "lax"
             })
 
             return {

@@ -1,18 +1,19 @@
 import Elysia from "elysia";
 import { AuthModel } from "./model";
-import {prisma} from "prisma"
+import {prisma} from "db"
+import { hashKeys } from "../../utils";
 
 export abstract class AuthService {
     static async signup(email: string, password: string): Promise<string> {
         // create a new user account
-        const user = await prisma.user.create({
+        const created_user = await prisma.user.create({
             data: {
                 email,
-                password: await Bun.password.hash(password)
+                password: await hashKeys(password)
             }
         })
 
-        return user.id.toString()
+        return created_user.id.toString()
     }
 
     static async signin(email: string, password: string): Promise<{correctCredentials: boolean, userId?: string}>{

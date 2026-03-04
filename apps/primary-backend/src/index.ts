@@ -1,14 +1,12 @@
 import { Elysia } from "elysia";
 import {app as authApp} from "./modules/auth";
-import {jwt} from "@elysiajs/jwt"
+import { apiApp } from "./modules/apiKey";
 
 const app = new Elysia()
   .use(authApp)
-  .use(jwt({
-    name: 'jwt',
-    secret: await Bun.password.hash("97766988@topsecret")
-  }))
-  .listen(3000);
+  .use(apiApp)
+  .get("/home", () => console.log("Hello from this side."))
+  .listen(4000);
 
 
 console.log(

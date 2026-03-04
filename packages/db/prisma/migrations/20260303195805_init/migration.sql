@@ -16,6 +16,8 @@ CREATE TABLE "ApiKeys" (
     "api_key" TEXT NOT NULL,
     "disabled" BOOLEAN NOT NULL DEFAULT false,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
+    "lastUsed" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "credits" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "ApiKeys_pkey" PRIMARY KEY ("id")
 );
