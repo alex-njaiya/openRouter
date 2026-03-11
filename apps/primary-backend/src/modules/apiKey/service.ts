@@ -77,10 +77,13 @@ export abstract class ApiKeyService {
 
 
     static async deleteApiKey(userId: number, id: number){
-        return await prisma.apiKeys.delete({
+        return await prisma.apiKeys.update({
             where: {
                 id,
                 user_id: userId
+            }, 
+            data: {
+                deleted: true
             }
         })
     }
